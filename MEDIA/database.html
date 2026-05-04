@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>МедКабинет — База пациентов</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260401-6">
+</head>
+<body>
+  <div class="shell">
+    <section class="card session-bar">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">База данных</p>
+          <h2>Пациенты и документы</h2>
+        </div>
+        <div class="toolbar">
+          <a class="ghost-btn" href="admin.html">Вернуться к администратору</a>
+          <button id="seed-demo-db" class="ghost-btn" type="button">Заполнить демо-базу</button>
+          <button id="reload-db" class="ghost-btn" type="button">Обновить</button>
+        </div>
+      </div>
+      <p id="db-status" class="muted">Загрузка данных...</p>
+    </section>
+
+    <section class="card timeline-card">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">Пациенты</p>
+          <h2>Таблица пациентов</h2>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>ФИО</th>
+              <th>Дата рождения</th>
+              <th>Город</th>
+              <th>Регистрация</th>
+              <th>Документов</th>
+              <th>Последний документ</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody id="db-patients"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card timeline-card">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">Документы</p>
+          <h2 id="documents-table-title">Таблица документов</h2>
+        </div>
+        <div class="toolbar">
+          <button id="show-all-documents" class="ghost-btn hidden" type="button">Показать все документы</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>ID пациента</th>
+              <th>Пациент</th>
+              <th>Название</th>
+              <th>Тип документа</th>
+              <th>Краткая сводка</th>
+              <th>Дата создания</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody id="db-documents"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="patient-edit-modal" class="chat-modal">
+    <div class="chat-shell">
+      <div class="section-head chat-head">
+        <div>
+          <p class="section-kicker">Редактирование пациента</p>
+          <h2 id="patient-edit-title">Карточка пациента</h2>
+        </div>
+        <button id="close-patient-edit" class="ghost-btn" type="button">Закрыть</button>
+      </div>
+      <form id="patient-edit-form">
+        <label class="field">
+          <span>ФИО</span>
+          <input id="patient-edit-full-name" type="text" required>
+        </label>
+        <label class="field">
+          <span>Дата рождения</span>
+          <input id="patient-edit-birth-date" type="text" placeholder="дд.мм.гггг">
+        </label>
+        <label class="field">
+          <span>Город</span>
+          <input id="patient-edit-city" type="text">
+        </label>
+        <label class="field">
+          <span>Регистрация</span>
+          <textarea id="patient-edit-registration" rows="3"></textarea>
+        </label>
+        <div class="action-row">
+          <button class="primary-btn" type="submit">Сохранить</button>
+          <button id="cancel-patient-edit" class="ghost-btn" type="button">Отменить</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog id="document-edit-modal" class="chat-modal">
+    <div class="chat-shell">
+      <div class="section-head chat-head">
+        <div>
+          <p class="section-kicker">Редактирование документа</p>
+          <h2 id="document-edit-title">Карточка документа</h2>
+        </div>
+        <button id="close-document-edit" class="ghost-btn" type="button">Закрыть</button>
+      </div>
+      <form id="document-edit-form">
+        <label class="field">
+          <span>Название</span>
+          <input id="document-edit-name" type="text" required>
+        </label>
+        <label class="field">
+          <span>Тип документа</span>
+          <input id="document-edit-type" type="text">
+        </label>
+        <label class="field">
+          <span>Краткая сводка</span>
+          <textarea id="document-edit-summary" rows="5"></textarea>
+        </label>
+        <div class="action-row">
+          <button class="primary-btn" type="submit">Сохранить</button>
+          <button id="cancel-document-edit" class="ghost-btn" type="button">Отменить</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <script>
+    const statusEl = document.getElementById("db-status");
+    const patientsEl = document.getElementById("db-patients");
+    const documentsEl = document.getElementById("db-documents");
+    const reloadBtn = document.getElementById("reload-db");
+    const seedDemoDbBtn = document.getElementById("seed-demo-db");
+    const patientEditModal = document.getElementById("patient-edit-modal");
+    const patientEditForm = document.getElementById("patient-edit-form");
+    const patientEditTitle = document.getElementById("patient-edit-title");
+    const patientEditFullName = document.getElementById("patient-edit-full-name");
+    const patientEditBirthDate = document.getElementById("patient-edit-birth-date");
+    const patientEditCity = document.getElementById("patient-edit-city");
+    const patientEditRegistration = document.getElementById("patient-edit-registration");
+    const closePatientEditBtn = document.getElementById("close-patient-edit");
+    const cancelPatientEditBtn = document.getElementById("cancel-patient-edit");
+    const documentEditModal = document.getElementById("document-edit-modal");
+    const documentEditForm = document.getElementById("document-edit-form");
+    const documentEditTitle = document.getElementById("document-edit-title");
+    const documentEditName = document.getElementById("document-edit-name");
+    const documentEditType = document.getElementById("document-edit-type");
+    const documentEditSummary = document.getElementById("document-edit-summary");
+    const closeDocumentEditBtn = document.getElementById("close-document-edit");
+    const cancelDocumentEditBtn = document.getElementById("cancel-document-edit");
+    const documentsTableTitle = document.getElementById("documents-table-title");
+    const showAllDocumentsBtn = document.getElementById("show-all-documents");
+    let patientsCache = [];
+    let documentsCache = [];
+    let editingPatientId = null;
+    let editingDocumentId = null;
+    let selectedPatientId = null;
+
+    reloadBtn.addEventListener("click", loadDatabase);
+    seedDemoDbBtn.addEventListener("click", seedDemoDatabase);
+    showAllDocumentsBtn.addEventListener("click", clearDocumentFilter);
+    closePatientEditBtn.addEventListener("click", () => patientEditModal.close());
+    cancelPatientEditBtn.addEventListener("click", () => patientEditModal.close());
+    patientEditForm.addEventListener("submit", submitPatientEdit);
+    closeDocumentEditBtn.addEventListener("click", () => documentEditModal.close());
+    cancelDocumentEditBtn.addEventListener("click", () => documentEditModal.close());
+    documentEditForm.addEventListener("submit", submitDocumentEdit);
+    loadDatabase();
+
+    async function loadDatabase() {
+      statusEl.textContent = "Загрузка данных...";
+      try {
+        const response = await fetch("/api/database");
+        if (!response.ok) {
+          throw new Error(`database failed with ${response.status}`);
+        }
+        const data = await response.json();
+        patientsCache = Array.isArray(data.patients) ? data.patients : [];
+        documentsCache = Array.isArray(data.documents) ? data.documents : [];
+        renderPatients(patientsCache);
+        renderDocuments(getVisibleDocuments());
+        syncDocumentsHeader();
+        statusEl.textContent = `Загружено пациентов: ${patientsCache.length}, документов: ${documentsCache.length}.`;
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = "Не удалось загрузить базу данных.";
+        patientsEl.innerHTML = '<tr><td colspan="8">Список пациентов недоступен.</td></tr>';
+        documentsEl.innerHTML = '<tr><td colspan="8">История документов недоступна.</td></tr>';
+      }
+    }
+
+    async function seedDemoDatabase() {
+      seedDemoDbBtn.disabled = true;
+      seedDemoDbBtn.textContent = "Заполняю...";
+      statusEl.textContent = "Добавляю демонстрационных пациентов и документы...";
+      try {
+        const response = await fetch("/api/seed-demo-db", { method: "POST" });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || `Ошибка ${response.status}`);
+        }
+        await loadDatabase();
+        statusEl.textContent = data.seeded
+          ? `Демо-база заполнена: пациентов ${data.patients}, документов ${data.documents}.`
+          : `База уже содержит данные: пациентов ${data.patients}, документов ${data.documents}.`;
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = `Не удалось заполнить демо-базу: ${error.message}`;
+      } finally {
+        seedDemoDbBtn.disabled = false;
+        seedDemoDbBtn.textContent = "Заполнить демо-базу";
+      }
+    }
+
+    function renderPatients(patients) {
+      if (!patients.length) {
+        patientsEl.innerHTML = '<tr><td colspan="8">Пациентов в базе пока нет.</td></tr>';
+        return;
+      }
+      patientsEl.innerHTML = patients.map((patient) => `
+        <tr class="${String(selectedPatientId) === String(patient.id) ? "selected-row" : ""}">
+          <td>${escapeHtml(String(patient.id ?? ""))}</td>
+          <td><button class="table-link" type="button" data-show-patient-docs="${patient.id}">${escapeHtml(patient.full_name || "Неизвестный пациент")}</button></td>
+          <td><button class="table-link" type="button" data-show-patient-docs="${patient.id}">${escapeHtml(patient.birth_date || "Не указана")}</button></td>
+          <td><button class="table-link" type="button" data-show-patient-docs="${patient.id}">${escapeHtml(patient.city || "Не указан")}</button></td>
+          <td><button class="table-link" type="button" data-show-patient-docs="${patient.id}">${escapeHtml(patient.registration || "Не указана")}</button></td>
+          <td>${escapeHtml(String(patient.document_count || 0))}</td>
+          <td>${escapeHtml(formatDate(patient.last_document_at || patient.created_at))}</td>
+          <td class="table-actions">
+            <button class="ghost-btn compact-btn" type="button" data-open-patient="${patient.id}">Редактировать</button>
+            <button class="ghost-btn compact-btn warn-btn" type="button" data-delete-patient="${patient.id}">Удалить</button>
+          </td>
+        </tr>
+      `).join("");
+      bindPatientActions();
+    }
+
+    function renderDocuments(documents) {
+      if (!documents.length) {
+        documentsEl.innerHTML = '<tr><td colspan="8">Документов в базе пока нет.</td></tr>';
+        return;
+      }
+      documentsEl.innerHTML = documents.map((documentItem) => `
+        <tr>
+          <td>${escapeHtml(String(documentItem.id ?? ""))}</td>
+          <td>${escapeHtml(String(documentItem.patient_id ?? ""))}</td>
+          <td>${escapeHtml(documentItem.patient_name || "Пациент не указан")}</td>
+          <td><button class="table-link" type="button" data-open-document="${documentItem.id}">${escapeHtml(documentItem.title || "Без названия")}</button></td>
+          <td><button class="table-link" type="button" data-open-document="${documentItem.id}">${escapeHtml(documentItem.document_type || "Не указан")}</button></td>
+          <td><button class="table-link" type="button" data-open-document="${documentItem.id}">${escapeHtml(documentItem.summary || "Не сформирована")}</button></td>
+          <td>${escapeHtml(formatDate(documentItem.created_at))}</td>
+          <td class="table-actions">
+            <button class="ghost-btn compact-btn" type="button" data-open-document="${documentItem.id}">Редактировать</button>
+            <button class="ghost-btn compact-btn warn-btn" type="button" data-delete-document="${documentItem.id}">Удалить</button>
+          </td>
+        </tr>
+      `).join("");
+      bindDocumentActions();
+    }
+
+    function bindPatientActions() {
+      document.querySelectorAll("[data-show-patient-docs]").forEach((button) => {
+        button.addEventListener("click", () => selectPatientDocuments(button.dataset.showPatientDocs));
+      });
+      document.querySelectorAll("[data-open-patient]").forEach((button) => {
+        button.addEventListener("click", () => openPatientEditor(button.dataset.openPatient));
+      });
+      document.querySelectorAll("[data-delete-patient]").forEach((button) => {
+        button.addEventListener("click", () => deletePatient(button.dataset.deletePatient));
+      });
+    }
+
+    function bindDocumentActions() {
+      document.querySelectorAll("[data-open-document]").forEach((button) => {
+        button.addEventListener("click", () => openDocumentEditor(button.dataset.openDocument));
+      });
+      document.querySelectorAll("[data-delete-document]").forEach((button) => {
+        button.addEventListener("click", () => deleteDocument(button.dataset.deleteDocument));
+      });
+    }
+
+    function openPatientEditor(patientId) {
+      const patient = patientsCache.find((item) => String(item.id) === String(patientId));
+      if (!patient) {
+        statusEl.textContent = `Не удалось найти пациента #${patientId}.`;
+        return;
+      }
+
+      editingPatientId = String(patient.id);
+      patientEditTitle.textContent = patient.full_name || `Пациент #${patient.id}`;
+      patientEditFullName.value = patient.full_name || "";
+      patientEditBirthDate.value = patient.birth_date || "";
+      patientEditCity.value = patient.city || "";
+      patientEditRegistration.value = patient.registration || "";
+      patientEditModal.showModal();
+    }
+
+    function selectPatientDocuments(patientId) {
+      selectedPatientId = String(patientId);
+      renderPatients(patientsCache);
+      renderDocuments(getVisibleDocuments());
+      syncDocumentsHeader();
+    }
+
+    function clearDocumentFilter() {
+      selectedPatientId = null;
+      renderPatients(patientsCache);
+      renderDocuments(getVisibleDocuments());
+      syncDocumentsHeader();
+    }
+
+    function getVisibleDocuments() {
+      if (!selectedPatientId) {
+        return documentsCache;
+      }
+      return documentsCache.filter((item) => String(item.patient_id) === String(selectedPatientId));
+    }
+
+    function syncDocumentsHeader() {
+      if (!selectedPatientId) {
+        documentsTableTitle.textContent = "Таблица документов";
+        showAllDocumentsBtn.classList.add("hidden");
+        return;
+      }
+
+      const patient = patientsCache.find((item) => String(item.id) === String(selectedPatientId));
+      documentsTableTitle.textContent = patient
+        ? `Документы пациента: ${patient.full_name}`
+        : "Таблица документов";
+      showAllDocumentsBtn.classList.remove("hidden");
+    }
+
+    async function submitPatientEdit(event) {
+      event.preventDefault();
+      if (!editingPatientId) {
+        return;
+      }
+
+      const payload = {
+        full_name: patientEditFullName.value.trim(),
+        birth_date: patientEditBirthDate.value.trim(),
+        city: patientEditCity.value.trim(),
+        registration: patientEditRegistration.value.trim(),
+      };
+      statusEl.textContent = `Сохраняю пациента #${editingPatientId}...`;
+      try {
+        const response = await fetch(`/api/patients/${editingPatientId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || `Ошибка ${response.status}`);
+        }
+        patientEditModal.close();
+        statusEl.textContent = `Пациент #${editingPatientId} сохранён.`;
+        await loadDatabase();
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = `Не удалось сохранить пациента #${editingPatientId}: ${error.message}`;
+      }
+    }
+
+    function openDocumentEditor(documentId) {
+      const documentItem = documentsCache.find((item) => String(item.id) === String(documentId));
+      if (!documentItem) {
+        statusEl.textContent = `Не удалось найти документ #${documentId}.`;
+        return;
+      }
+
+      editingDocumentId = String(documentItem.id);
+      documentEditTitle.textContent = documentItem.title || `Документ #${documentItem.id}`;
+      documentEditName.value = documentItem.title || "";
+      documentEditType.value = documentItem.document_type || "";
+      documentEditSummary.value = documentItem.summary || "";
+      documentEditModal.showModal();
+    }
+
+    async function submitDocumentEdit(event) {
+      event.preventDefault();
+      if (!editingDocumentId) {
+        return;
+      }
+
+      const payload = {
+        title: documentEditName.value.trim(),
+        document_type: documentEditType.value.trim(),
+        summary: documentEditSummary.value.trim(),
+      };
+      statusEl.textContent = `Сохраняю документ #${editingDocumentId}...`;
+      try {
+        const response = await fetch(`/api/documents/${editingDocumentId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || `Ошибка ${response.status}`);
+        }
+        documentEditModal.close();
+        statusEl.textContent = `Документ #${editingDocumentId} сохранён.`;
+        await loadDatabase();
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = `Не удалось сохранить документ #${editingDocumentId}: ${error.message}`;
+      }
+    }
+
+    async function deleteDocument(documentId) {
+      statusEl.textContent = `Удаляю документ #${documentId}...`;
+      try {
+        const response = await fetch(`/api/documents/${documentId}`, { method: "DELETE" });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || `Ошибка ${response.status}`);
+        }
+        statusEl.textContent = `Документ #${documentId} удалён.`;
+        await loadDatabase();
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = `Не удалось удалить документ #${documentId}: ${error.message}`;
+      }
+    }
+
+    async function deletePatient(patientId) {
+      statusEl.textContent = `Удаляю пациента #${patientId} и его документы...`;
+      try {
+        const response = await fetch(`/api/patients/${patientId}`, { method: "DELETE" });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || `Ошибка ${response.status}`);
+        }
+        if (String(selectedPatientId) === String(patientId)) {
+          selectedPatientId = null;
+        }
+        statusEl.textContent = `Пациент #${patientId} удалён.`;
+        await loadDatabase();
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = `Не удалось удалить пациента #${patientId}: ${error.message}`;
+      }
+    }
+
+    function formatDate(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return value || "";
+      }
+      return new Intl.DateTimeFormat("ru-RU", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(date);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+  </script>
+</body>
+</html>

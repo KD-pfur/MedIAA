@@ -36,7 +36,7 @@ cp .env.example .env
 ```env
 GIGACHAT_AUTH_KEY=your_gigachat_auth_key_here
 GIGACHAT_SCOPE=GIGACHAT_API_PERS
-GIGACHAT_MODEL=GigaChat-Max
+GIGACHAT_MODEL=GigaChat-Pro
 GIGACHAT_CA_BUNDLE=
 ```
 

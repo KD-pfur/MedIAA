@@ -40,10 +40,141 @@ def load_dotenv():
 load_dotenv()
 GIGACHAT_AUTH_KEY = os.environ.get("GIGACHAT_AUTH_KEY", "")
 GIGACHAT_SCOPE = os.environ.get("GIGACHAT_SCOPE", "GIGACHAT_API_PERS")
-GIGACHAT_MODEL = os.environ.get("GIGACHAT_MODEL", "GigaChat-Max")
+GIGACHAT_MODEL = os.environ.get("GIGACHAT_MODEL", "GigaChat-Pro")
 GIGACHAT_CA_BUNDLE = os.environ.get("GIGACHAT_CA_BUNDLE", certifi.where())
 SSL_CONTEXT = ssl.create_default_context(cafile=GIGACHAT_CA_BUNDLE)
 TOKEN_CACHE = {"access_token": "", "expires_at": 0.0}
+
+DEMO_DATABASE_SEED = [
+    {
+        "patient": {
+            "full_name": "Иванов Иван Иванович",
+            "birth_date": "14.05.1986",
+            "city": "Москва",
+            "registration": "Москва, ул. Лесная, д. 12",
+        },
+        "documents": [
+            {
+                "title": "Выписка после очного приёма",
+                "document_type": "Выписка",
+                "summary": "Пациент Иванов Иван Иванович. Выявлены сахарный диабет 2 типа и артериальная гипертензия. Нужен повторный лабораторный контроль.",
+                "source_text": "Пациент: Иванов Иван Иванович. Диагноз: Сахарный диабет 2 типа. Артериальная гипертензия.",
+                "created_at": "2026-04-01 11:18:00",
+                "extracted": {
+                    "patient": {"name": "Иванов Иван Иванович", "birthDate": "14.05.1986"},
+                    "document": {"type": "Выписка", "date": "12.03.2026", "facility": "Клиника Сфера Здоровья"},
+                    "doctor": {"name": "Петрова Анна Сергеевна"},
+                    "diagnoses": ["Сахарный диабет 2 типа", "Артериальная гипертензия"],
+                    "complaints": ["слабость", "жажда"],
+                    "medications": ["Метформин 1000 мг 2 раза в день", "Лозартан 50 мг 1 раз в день"],
+                    "labs": [],
+                    "summary": "Пациент Иванов Иван Иванович. Выявлены сахарный диабет 2 типа и артериальная гипертензия.",
+                },
+            },
+            {
+                "title": "Контрольный лист анализов",
+                "document_type": "Результаты анализов",
+                "summary": "По контрольным анализам остаются повышенными глюкоза и HbA1c.",
+                "source_text": "Глюкоза 8.4 ммоль/л. HbA1c 7.3%.",
+                "created_at": "2026-04-01 10:42:00",
+                "extracted": {
+                    "patient": {"name": "Иванов Иван Иванович", "birthDate": "14.05.1986"},
+                    "document": {"type": "Результаты анализов", "date": "29.03.2026", "facility": "Лаборатория МедЛаб"},
+                    "doctor": {"name": "Петрова Анна Сергеевна"},
+                    "diagnoses": ["Нарушение гликемического контроля"],
+                    "complaints": [],
+                    "medications": [],
+                    "labs": [
+                        {"name": "Глюкоза", "value": "8.4", "unit": "ммоль/л", "range": "3.9 - 5.5", "status": "high"},
+                        {"name": "HbA1c", "value": "7.3", "unit": "%", "range": "4.0 - 5.6", "status": "high"},
+                    ],
+                    "summary": "По контрольным анализам остаются повышенными глюкоза и HbA1c.",
+                },
+            },
+        ],
+    },
+    {
+        "patient": {
+            "full_name": "Соколов Артем Игоревич",
+            "birth_date": "22.11.1998",
+            "city": "Москва",
+            "registration": "Москва, проспект Мира, д. 41",
+        },
+        "documents": [
+            {
+                "title": "Медицинская справка перед госпитализацией",
+                "document_type": "Медицинская справка",
+                "summary": "Есть признаки декомпенсации диабета, требуется очная консультация эндокринолога.",
+                "source_text": "Медицинская справка. Пациент: Соколов Артем Игоревич. Диагноз: сахарный диабет 2 типа.",
+                "created_at": "2026-04-01 09:55:00",
+                "extracted": {
+                    "patient": {"name": "Соколов Артем Игоревич", "birthDate": "22.11.1998"},
+                    "document": {"type": "Медицинская справка", "date": "14.03.2026", "facility": "Городская клиника №7"},
+                    "doctor": {"name": "Смирнова Елена Павловна"},
+                    "diagnoses": ["Сахарный диабет 2 типа", "Ожирение 1 степени"],
+                    "complaints": ["жажда", "сухость во рту"],
+                    "medications": ["Контроль глюкозы крови 2 раза в день"],
+                    "labs": [],
+                    "summary": "Есть признаки декомпенсации диабета, требуется очная консультация эндокринолога.",
+                },
+            }
+        ],
+    },
+    {
+        "patient": {
+            "full_name": "Орлова Марина Сергеевна",
+            "birth_date": "03.02.1991",
+            "city": "Химки",
+            "registration": "Химки, ул. Молодёжная, д. 8",
+        },
+        "documents": [
+            {
+                "title": "Результаты лабораторного контроля",
+                "document_type": "Результаты анализов",
+                "summary": "Нужен повторный визит к эндокринологу из-за роста HbA1c.",
+                "source_text": "Пациент: Орлова Марина Сергеевна. HbA1c 6.9%. Глюкоза 7.1 ммоль/л.",
+                "created_at": "2026-04-01 09:10:00",
+                "extracted": {
+                    "patient": {"name": "Орлова Марина Сергеевна", "birthDate": "03.02.1991"},
+                    "document": {"type": "Результаты анализов", "date": "29.03.2026", "facility": "Лаборатория МедЛаб"},
+                    "doctor": {"name": "Кузнецова Ирина Алексеевна"},
+                    "diagnoses": ["Нарушение гликемического контроля"],
+                    "complaints": [],
+                    "medications": ["Рекомендован повторный визит к эндокринологу"],
+                    "labs": [],
+                    "summary": "Нужен повторный визит к эндокринологу из-за роста HbA1c.",
+                },
+            }
+        ],
+    },
+    {
+        "patient": {
+            "full_name": "Кадачигов Дмитрий Сергеевич",
+            "birth_date": "10.03.2007",
+            "city": "Мытищи",
+            "registration": "Мытищи, Новомытищинский пр-т, д. 18",
+        },
+        "documents": [
+            {
+                "title": "Описание исследования стопы",
+                "document_type": "Описание снимка",
+                "summary": "Подозрение на осложнение со стороны стопы, рекомендована консультация хирурга.",
+                "source_text": "Описание снимка. Пациент: Кадачигов Дмитрий Сергеевич. Рекомендована консультация хирурга.",
+                "created_at": "2026-03-31 17:35:00",
+                "extracted": {
+                    "patient": {"name": "Кадачигов Дмитрий Сергеевич", "birthDate": "10.03.2007"},
+                    "document": {"type": "Описание снимка", "date": "30.03.2026", "facility": "Диагностический центр Север"},
+                    "doctor": {"name": "Громов Алексей Валерьевич"},
+                    "diagnoses": ["Диабетическая стопа, подозрение на осложнение"],
+                    "complaints": ["болезненность в области стопы"],
+                    "medications": ["Рекомендована очная консультация хирурга"],
+                    "labs": [],
+                    "summary": "Подозрение на осложнение со стороны стопы, рекомендована консультация хирурга.",
+                },
+            }
+        ],
+    },
+]
 
 
 def has_real_gigachat_key():
@@ -93,6 +224,18 @@ class MedFlowHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/patients":
             self._send_json(HTTPStatus.OK, {"patients": list_patients()})
             return
+        if self.path == "/api/documents":
+            self._send_json(HTTPStatus.OK, {"documents": list_documents()})
+            return
+        if self.path == "/api/database":
+            self._send_json(
+                HTTPStatus.OK,
+                {
+                    "patients": list_patients(),
+                    "documents": list_documents(),
+                },
+            )
+            return
 
         return super().do_GET()
 
@@ -105,6 +248,12 @@ class MedFlowHandler(SimpleHTTPRequestHandler):
             return
         if self.path == "/api/cases":
             self._handle_save_case()
+            return
+        if self.path == "/api/questionnaire-opinion":
+            self._handle_questionnaire_opinion()
+            return
+        if self.path == "/api/seed-demo-db":
+            self._handle_seed_demo_db()
             return
 
         if self.path != "/api/chat":
@@ -151,6 +300,26 @@ class MedFlowHandler(SimpleHTTPRequestHandler):
             return
 
         self._send_json(HTTPStatus.OK, {"answer": answer, "model": GIGACHAT_MODEL})
+
+    def do_PUT(self):
+        if self.path.startswith("/api/patients/"):
+            self._handle_update_patient()
+            return
+        if self.path.startswith("/api/documents/"):
+            self._handle_update_document()
+            return
+
+        self._send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
+
+    def do_DELETE(self):
+        if self.path.startswith("/api/patients/"):
+            self._handle_delete_patient()
+            return
+        if self.path.startswith("/api/documents/"):
+            self._handle_delete_document()
+            return
+
+        self._send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
 
     def _handle_preprocess_image(self):
         length = int(self.headers.get("Content-Length", "0"))
@@ -278,6 +447,130 @@ class MedFlowHandler(SimpleHTTPRequestHandler):
 
         self._send_json(HTTPStatus.OK, result)
 
+    def _handle_questionnaire_opinion(self):
+        if not has_real_gigachat_key():
+            payload = self._read_json_body()
+            if payload is None:
+                self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Invalid JSON body"})
+                return
+            answers = payload.get("answers") or {}
+            patient = payload.get("patient") or {}
+            questionnaire_title = str(payload.get("title", "")).strip() or "Опросник по сахарному диабету 1 типа у взрослых"
+            opinion = analyze_questionnaire_locally(questionnaire_title, patient, answers, gigachat_key_error())
+            self._send_json(HTTPStatus.OK, {"opinion": opinion, "model": "local-fallback"})
+            return
+
+        length = int(self.headers.get("Content-Length", "0"))
+        body = self.rfile.read(length)
+        try:
+            payload = json.loads(body.decode("utf-8"))
+        except json.JSONDecodeError:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Invalid JSON body"})
+            return
+
+        answers = payload.get("answers") or {}
+        patient = payload.get("patient") or {}
+        questionnaire_title = str(payload.get("title", "")).strip() or "Опросник по сахарному диабету 1 типа у взрослых"
+
+        try:
+            opinion = self._analyze_questionnaire_with_gigachat(questionnaire_title, patient, answers)
+        except Exception as exc:
+            opinion = analyze_questionnaire_locally(questionnaire_title, patient, answers, str(exc))
+
+        self._send_json(HTTPStatus.OK, {"opinion": opinion, "model": GIGACHAT_MODEL})
+
+    def _handle_update_patient(self):
+        patient_id = extract_numeric_id(self.path, "/api/patients/")
+        if patient_id is None:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Некорректный идентификатор пациента"})
+            return
+
+        payload = self._read_json_body()
+        if payload is None:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Invalid JSON body"})
+            return
+
+        try:
+            patient = update_patient_record(patient_id, payload)
+        except ValueError as exc:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": str(exc)})
+            return
+
+        if not patient:
+            self._send_json(HTTPStatus.NOT_FOUND, {"error": "Пациент не найден"})
+            return
+
+        self._send_json(HTTPStatus.OK, {"patient": patient})
+
+    def _handle_update_document(self):
+        document_id = extract_numeric_id(self.path, "/api/documents/")
+        if document_id is None:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Некорректный идентификатор документа"})
+            return
+
+        payload = self._read_json_body()
+        if payload is None:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Invalid JSON body"})
+            return
+
+        try:
+            document = update_document_record(document_id, payload)
+        except ValueError as exc:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": str(exc)})
+            return
+
+        if not document:
+            self._send_json(HTTPStatus.NOT_FOUND, {"error": "Документ не найден"})
+            return
+
+        self._send_json(HTTPStatus.OK, {"document": document})
+
+    def _handle_delete_patient(self):
+        patient_id = extract_numeric_id(self.path, "/api/patients/")
+        if patient_id is None:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Некорректный идентификатор пациента"})
+            return
+
+        deleted = delete_patient_record(patient_id)
+        if not deleted:
+            self._send_json(HTTPStatus.NOT_FOUND, {"error": "Пациент не найден"})
+            return
+
+        self._send_json(HTTPStatus.OK, {"deleted": True, "patient_id": patient_id})
+
+    def _handle_delete_document(self):
+        document_id = extract_numeric_id(self.path, "/api/documents/")
+        if document_id is None:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Некорректный идентификатор документа"})
+            return
+
+        deleted = delete_document_record(document_id)
+        if not deleted:
+            self._send_json(HTTPStatus.NOT_FOUND, {"error": "Документ не найден"})
+            return
+
+        self._send_json(HTTPStatus.OK, {"deleted": True, "document_id": document_id})
+
+    def _handle_seed_demo_db(self):
+        try:
+            result = seed_demo_database_now()
+        except Exception as exc:
+            self._send_json(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                {"error": "Не удалось заполнить демо-базу", "details": str(exc)},
+            )
+            return
+
+        self._send_json(HTTPStatus.OK, result)
+
+    def _read_json_body(self):
+        length = int(self.headers.get("Content-Length", "0"))
+        body = self.rfile.read(length)
+        try:
+            return json.loads(body.decode("utf-8"))
+        except json.JSONDecodeError:
+            return None
+
     def _call_gigachat(self, question, case_data, history):
         source_text = str(case_data.get("sourceText", ""))[:18000]
         extracted = case_data.get("extracted", {})
@@ -303,6 +596,34 @@ class MedFlowHandler(SimpleHTTPRequestHandler):
         messages.append({"role": "user", "content": context_prompt})
         data = gigachat_chat(messages)
         return extract_gigachat_text(data) or "Модель не вернула текстовый ответ."
+
+    def _analyze_questionnaire_with_gigachat(self, questionnaire_title, patient, answers):
+        system_prompt = (
+            "Ты помогаешь врачу оценить ответы пациента на медицинский опросник. "
+            "Это не диагноз. Нужна только аккуратная предварительная клиническая оценка для врача. "
+            "Отвечай строго JSON без пояснений вне JSON. "
+            "Не придумывай факты, которых нет в ответах."
+        )
+        user_prompt = (
+            f"Название опросника: {questionnaire_title}\n"
+            f"Пациент: {json.dumps(patient, ensure_ascii=False)}\n"
+            f"Ответы: {json.dumps(answers, ensure_ascii=False)}\n\n"
+            "Верни JSON структуры: "
+            "{\"risk_level\":\"низкий|средний|высокий|критический\","
+            "\"summary_for_doctor\":\"\","
+            "\"red_flags\":[],"
+            "\"likely_concerns\":[],"
+            "\"recommended_route\":\"\","
+            "\"needs_urgent_review\":true,"
+            "\"patient_message\":\"\"}. "
+            "Если есть признаки экстренного состояния, отражай это в risk_level, red_flags и needs_urgent_review."
+        )
+        data = gigachat_chat([
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ])
+        text = extract_gigachat_text(data)
+        return parse_json_from_text(text)
 
     def _scan_image_with_gigachat(self, image_bytes, content_type, mode):
         source_image = prepare_upload_image(image_bytes)
@@ -559,6 +880,102 @@ def parse_json_from_text(text):
     return json.loads(cleaned[start:end + 1])
 
 
+def analyze_questionnaire_locally(questionnaire_title, patient, answers, error_message=""):
+    positive_flags = []
+    medium_flags = []
+
+    def has_yes(key):
+        value = str(answers.get(key, "")).strip().lower()
+        return value in {"да", "yes", "true"}
+
+    def value_contains(key, expected_values):
+        value = str(answers.get(key, "")).strip().lower()
+        return value in {item.lower() for item in expected_values}
+
+    if has_yes("urination"):
+        medium_flags.append("частое мочеиспускание")
+    if has_yes("weight_loss"):
+        positive_flags.append("непреднамеренная потеря веса")
+    if has_yes("blurred_vision"):
+        medium_flags.append("ухудшение зрения")
+    if has_yes("nausea"):
+        positive_flags.append("тошнота или боль в животе")
+    if has_yes("acetone_breath"):
+        positive_flags.append("запах ацетона")
+    if value_contains("duration", ["несколько дней", "1-2 недели"]):
+        positive_flags.append("быстрое развитие симптомов")
+    if value_contains("glucose_known", ["да, сильно повышена"]):
+        positive_flags.append("выраженное повышение глюкозы")
+    if value_contains("glucose_known", ["да, умеренно"]):
+        medium_flags.append("повышенная глюкоза")
+    if value_contains("hba1c_high", ["да"]):
+        medium_flags.append("гликированный гемоглобин выше 7,5%")
+    if value_contains("insulin_calculation", ["только на глаз", "иногда на глаз"]):
+        medium_flags.append("неточного расчёта инсулина")
+    if value_contains("bread_units_count", ["нет"]):
+        medium_flags.append("нет подсчёта хлебных единиц")
+    if value_contains("diet_following", ["нет"]):
+        medium_flags.append("не соблюдает питание")
+
+    score = (len(positive_flags) * 2) + len(medium_flags)
+    if len(positive_flags) >= 3 or score >= 7:
+        risk_level = "высокий"
+    elif score >= 4:
+        risk_level = "средний"
+    else:
+        risk_level = "низкий"
+
+    if has_yes("nausea") and has_yes("acetone_breath"):
+        risk_level = "критический"
+
+    all_flags = positive_flags + medium_flags
+    likely_concerns = []
+    if any(flag in positive_flags for flag in ["запах ацетона", "тошнота или боль в животе", "быстрое развитие симптомов"]):
+        likely_concerns.append("риск декомпенсации и кетоза")
+    if "гликированный гемоглобин выше 7,5%" in medium_flags:
+        likely_concerns.append("недостаточный контроль гликемии")
+    if "неточного расчёта инсулина" in medium_flags or "нет подсчёта хлебных единиц" in medium_flags:
+        likely_concerns.append("ошибки самоконтроля и коррекции инсулина")
+
+    route_by_risk = {
+        "критический": "Срочный осмотр врача и неотложная госпитализация.",
+        "высокий": "Приоритетная консультация эндокринолога в ближайшее время.",
+        "средний": "Плановая консультация эндокринолога и коррекция терапии.",
+        "низкий": "Плановое наблюдение врача и контроль самоконтроля.",
+    }
+    patient_message_by_risk = {
+        "критический": "Есть тревожные сочетания симптомов. Нужен срочный осмотр врача.",
+        "высокий": "Нужна быстрая очная оценка врача. Не откладывайте обращение.",
+        "средний": "Ответы требуют плановой оценки врача и проверки контроля заболевания.",
+        "низкий": "Выраженных срочных признаков по анкете не видно, но решение остаётся за врачом.",
+    }
+
+    patient_name = str(patient.get("full_name", "")).strip() or "Пациент"
+    summary_parts = [f"{patient_name}: предварительная оценка опросника."]
+    if all_flags:
+        summary_parts.append(f"Выявлены признаки: {', '.join(all_flags[:6])}.")
+    else:
+        summary_parts.append("Выраженные настораживающие признаки по анкете не выделены.")
+    if likely_concerns:
+        summary_parts.append(f"Вероятные проблемы: {', '.join(likely_concerns[:3])}.")
+    if error_message:
+        summary_parts.append("Заключение сформировано по локальным правилам, потому что нейросеть не ответила.")
+
+    return {
+        "status": "fallback" if error_message else "ok",
+        "risk_level": risk_level,
+        "summary_for_doctor": " ".join(summary_parts),
+        "red_flags": positive_flags,
+        "likely_concerns": likely_concerns,
+        "recommended_route": route_by_risk[risk_level],
+        "needs_urgent_review": risk_level in {"высокий", "критический"},
+        "patient_message": patient_message_by_risk[risk_level],
+        "error_message": error_message,
+        "source": "local-rules" if error_message else "gigachat",
+        "questionnaire_title": questionnaire_title,
+    }
+
+
 def db_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -593,11 +1010,60 @@ def init_db():
         )
 
 
+def seed_demo_database(conn):
+    patient_count = conn.execute("SELECT COUNT(*) FROM patients").fetchone()[0]
+    document_count = conn.execute("SELECT COUNT(*) FROM documents").fetchone()[0]
+    if patient_count or document_count:
+        return {"seeded": False, "patients": patient_count, "documents": document_count}
+
+    for entry in DEMO_DATABASE_SEED:
+        patient = entry["patient"]
+        cursor = conn.execute(
+            """
+            INSERT INTO patients (full_name, birth_date, city, registration, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                patient["full_name"],
+                patient["birth_date"],
+                patient["city"],
+                patient["registration"],
+                entry["documents"][0]["created_at"],
+            ),
+        )
+        patient_id = cursor.lastrowid
+        for document in entry["documents"]:
+            conn.execute(
+                """
+                INSERT INTO documents (patient_id, title, document_type, summary, source_text, extracted_json, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    patient_id,
+                    document["title"],
+                    document["document_type"],
+                    document["summary"],
+                    document["source_text"],
+                    json.dumps(document["extracted"], ensure_ascii=False),
+                    document["created_at"],
+                ),
+            )
+    patient_count = conn.execute("SELECT COUNT(*) FROM patients").fetchone()[0]
+    document_count = conn.execute("SELECT COUNT(*) FROM documents").fetchone()[0]
+    return {"seeded": True, "patients": patient_count, "documents": document_count}
+
+
+def seed_demo_database_now():
+    init_db()
+    with db_connection() as conn:
+        return seed_demo_database(conn)
+
+
 def save_case_to_db(title, source_text, extracted):
     init_db()
     with db_connection() as conn:
         patient_id = find_or_create_patient(conn, extracted)
-        conn.execute(
+        cursor = conn.execute(
             """
             INSERT INTO documents (patient_id, title, document_type, summary, source_text, extracted_json)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -611,6 +1077,7 @@ def save_case_to_db(title, source_text, extracted):
                 json.dumps(extracted, ensure_ascii=False),
             ),
         )
+        document_id = cursor.lastrowid
         row = conn.execute(
             """
             SELECT p.*, COUNT(d.id) AS document_count, MAX(d.created_at) AS last_document_at
@@ -621,7 +1088,22 @@ def save_case_to_db(title, source_text, extracted):
             """,
             (patient_id,),
         ).fetchone()
-    return {"saved": True, "patient": dict(row)}
+        document = conn.execute(
+            """
+            SELECT
+                d.id,
+                d.patient_id,
+                d.title,
+                d.document_type,
+                d.summary,
+                d.source_text,
+                d.created_at
+            FROM documents d
+            WHERE d.id = ?
+            """,
+            (document_id,),
+        ).fetchone()
+    return {"saved": True, "patient": dict(row), "document": dict(document)}
 
 
 def find_or_create_patient(conn, extracted):
@@ -678,6 +1160,140 @@ def list_patients():
             """
         ).fetchall()
     return [dict(row) for row in rows]
+
+
+def list_documents():
+    init_db()
+    with db_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT
+                d.id,
+                d.patient_id,
+                d.title,
+                d.document_type,
+                d.summary,
+                d.source_text,
+                d.created_at,
+                p.full_name AS patient_name,
+                p.birth_date AS patient_birth_date
+            FROM documents d
+            JOIN patients p ON p.id = d.patient_id
+            ORDER BY d.created_at DESC, d.id DESC
+            """
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def delete_document_record(document_id):
+    init_db()
+    with db_connection() as conn:
+        cursor = conn.execute("DELETE FROM documents WHERE id = ?", (document_id,))
+    return cursor.rowcount > 0
+
+
+def delete_patient_record(patient_id):
+    init_db()
+    with db_connection() as conn:
+        conn.execute("DELETE FROM documents WHERE patient_id = ?", (patient_id,))
+        cursor = conn.execute("DELETE FROM patients WHERE id = ?", (patient_id,))
+    return cursor.rowcount > 0
+
+
+def get_patient_by_id(patient_id):
+    init_db()
+    with db_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT p.*, COUNT(d.id) AS document_count, MAX(d.created_at) AS last_document_at
+            FROM patients p
+            LEFT JOIN documents d ON d.patient_id = p.id
+            WHERE p.id = ?
+            GROUP BY p.id
+            """,
+            (patient_id,),
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def get_document_by_id(document_id):
+    init_db()
+    with db_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT
+                d.id,
+                d.patient_id,
+                d.title,
+                d.document_type,
+                d.summary,
+                d.source_text,
+                d.created_at,
+                p.full_name AS patient_name,
+                p.birth_date AS patient_birth_date
+            FROM documents d
+            JOIN patients p ON p.id = d.patient_id
+            WHERE d.id = ?
+            """,
+            (document_id,),
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def update_patient_record(patient_id, payload):
+    full_name = str(payload.get("full_name", "")).strip()
+    if not full_name:
+        raise ValueError("ФИО пациента не может быть пустым")
+
+    birth_date = str(payload.get("birth_date", "")).strip()
+    city = str(payload.get("city", "")).strip()
+    registration = str(payload.get("registration", "")).strip()
+
+    init_db()
+    with db_connection() as conn:
+        cursor = conn.execute(
+            """
+            UPDATE patients
+            SET full_name = ?, birth_date = ?, city = ?, registration = ?
+            WHERE id = ?
+            """,
+            (full_name, birth_date, city, registration, patient_id),
+        )
+        if cursor.rowcount == 0:
+            return None
+    return get_patient_by_id(patient_id)
+
+
+def update_document_record(document_id, payload):
+    title = str(payload.get("title", "")).strip()
+    if not title:
+        raise ValueError("Название обращения не может быть пустым")
+
+    document_type = str(payload.get("document_type", "")).strip()
+    summary = str(payload.get("summary", "")).strip()
+
+    init_db()
+    with db_connection() as conn:
+        cursor = conn.execute(
+            """
+            UPDATE documents
+            SET title = ?, document_type = ?, summary = ?
+            WHERE id = ?
+            """,
+            (title, document_type, summary, document_id),
+        )
+        if cursor.rowcount == 0:
+            return None
+    return get_document_by_id(document_id)
+
+
+def extract_numeric_id(path, prefix):
+    if not path.startswith(prefix):
+        return None
+    value = path[len(prefix):].split("?", 1)[0].strip("/")
+    if not value.isdigit():
+        return None
+    return int(value)
 
 
 def preprocess_image(image, mode="auto"):

@@ -134,6 +134,73 @@ h1 {
   padding: 24px;
 }
 
+.auth-card,
+.session-bar {
+  margin-bottom: 24px;
+}
+
+.auth-form {
+  max-width: 540px;
+}
+
+.portal-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1.3fr);
+  gap: 18px;
+}
+
+.profile-card {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid var(--border);
+}
+
+.profile-card h3,
+.profile-card p {
+  margin-bottom: 8px;
+}
+
+.case-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.case-step-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.case-step {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
+}
+
+.case-step strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.status-badge.warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
 .section-head,
 .panel-head,
 .action-row,
@@ -157,6 +224,10 @@ h1 {
 .field {
   display: block;
   margin-bottom: 16px;
+}
+
+.compact-field {
+  margin-bottom: 12px;
 }
 
 .preview-panel {
@@ -220,6 +291,39 @@ textarea {
   color: var(--ink);
 }
 
+.table-input {
+  width: 100%;
+  min-width: 140px;
+  padding: 10px 12px;
+  border: 1px solid rgba(30, 31, 26, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.table-textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.table-link {
+  display: inline;
+  width: auto;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.table-link:hover {
+  transform: none;
+  color: var(--accent);
+  text-decoration: underline;
+}
+
 textarea {
   resize: vertical;
   min-height: 280px;
@@ -254,6 +358,14 @@ button:disabled {
   background: rgba(20, 92, 77, 0.08);
   color: var(--accent);
   font-weight: 700;
+}
+
+a.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 16px;
+  text-decoration: none;
+  border-radius: 16px;
 }
 
 .action-row {
@@ -350,6 +462,10 @@ td {
   border-bottom: 1px solid rgba(30, 31, 26, 0.08);
 }
 
+.selected-row td {
+  background: rgba(20, 92, 77, 0.08);
+}
+
 th {
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -413,6 +529,22 @@ th {
   width: 100%;
 }
 
+.compact-btn {
+  width: auto;
+  white-space: nowrap;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.warn-btn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
 .chat-modal {
   width: min(760px, calc(100% - 24px));
   border: none;
@@ -457,9 +589,16 @@ th {
   border-radius: 18px;
 }
 
+.chat-bubble-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
 .chat-bubble p {
   margin-bottom: 0;
   line-height: 1.5;
+  flex: 1 1 auto;
 }
 
 .chat-bubble.assistant {
@@ -476,15 +615,42 @@ th {
 
 .chat-form {
   margin-top: 14px;
+  align-items: center;
 }
 
 .chat-form input {
   flex: 1 1 auto;
 }
 
+.tts-btn,
+.mic-btn {
+  min-width: 48px;
+  padding: 10px 12px;
+}
+
+.tts-btn {
+  border: 1px solid rgba(20, 92, 77, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+.tts-btn.active,
+.mic-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.mic-btn.error {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
 @media (max-width: 920px) {
   .hero,
-  .grid {
+  .grid,
+  .portal-grid {
     grid-template-columns: 1fr;
   }
 

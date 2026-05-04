@@ -3,26 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>МедПоток</title>
+  <title>МедКабинет</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260401-8">
 </head>
 <body>
   <div class="shell">
-    <header class="hero">
+    <section id="auth-screen" class="card auth-card">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">Вход</p>
+          <h2>Учебный кабинет клиники</h2>
+        </div>
+      </div>
+      <p class="hero-text">Локальный кабинет с двумя ролями: координатор клиники и пациент. Для входа используйте <strong>coordinator / clinic2026</strong> или <strong>egor / health2026</strong>.</p>
+      <div class="hero-badges">
+        <a class="ghost-btn" href="admin.html">Открыть страницу координатора</a>
+        <a class="ghost-btn" href="patient.html">Открыть страницу пациента</a>
+        <a class="ghost-btn" href="database.html?v=20260504-1">Открыть базу пациентов</a>
+      </div>
+      <form id="login-form" class="auth-form">
+        <label class="field">
+          <span>Логин</span>
+          <input id="login-username" type="text" autocomplete="username" placeholder="coordinator или egor">
+        </label>
+        <label class="field">
+          <span>Пароль</span>
+          <input id="login-password" type="password" autocomplete="current-password" placeholder="clinic2026 или health2026">
+        </label>
+        <div class="action-row">
+          <button class="primary-btn" type="submit">Войти</button>
+          <p id="login-status" class="muted">Координатор видит все обращения и базу пациентов. Пациент видит только свой кабинет и текущее обращение.</p>
+        </div>
+      </form>
+    </section>
+
+    <div id="app-content" class="hidden">
+    <section id="session-bar" class="card session-bar">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">Сессия</p>
+          <h2 id="session-role">Не авторизован</h2>
+        </div>
+        <div class="toolbar">
+          <span id="session-user" class="panel-note">-</span>
+          <button id="logout-btn" class="ghost-btn" type="button">Выйти</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin-portal" class="card timeline-card hidden">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">Панель координатора</p>
+          <h2>Сотрудники смены и обращения</h2>
+        </div>
+        <div class="toolbar">
+          <a class="ghost-btn" href="database.html?v=20260504-1">Открыть базу пациентов</a>
+        </div>
+      </div>
+      <div class="portal-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Сотрудники смены</h3>
+          </div>
+          <div id="admin-profiles" class="saved-cases"></div>
+        </article>
+        <article class="panel panel-wide">
+          <div class="panel-head">
+            <h3>Обращения пациентов</h3>
+          </div>
+          <div id="admin-cases" class="saved-cases"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="user-portal" class="card timeline-card hidden">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">Кабинет пациента</p>
+          <h2>Моё обращение</h2>
+        </div>
+      </div>
+      <div class="portal-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Профиль</h3>
+          </div>
+          <div id="user-profile-card"></div>
+        </article>
+        <article class="panel panel-wide">
+          <div class="panel-head">
+            <h3>Статус обследования</h3>
+          </div>
+          <div id="user-case-card"></div>
+        </article>
+      </div>
+    </section>
+
+    <header class="hero admin-only">
       <div class="hero-copy">
         <p class="eyebrow">Сервис обработки меддокументов</p>
         <h1>Загрузка меддокумента, извлечение полей и быстрая клиническая сводка.</h1>
         <p class="hero-text">
           Демонстрационный сервис для анализа выписок, лабораторных результатов, рецептов и описаний снимков.
-          OCR и AI-чат работают через GigaChat API, а предобработка изображения выполняется локально на сервере.
+          Распознавание текста и помощник по документу работают через GigaChat API, а подготовка изображения выполняется локально на сервере.
         </p>
         <div class="hero-badges">
           <span>Локальное хранение</span>
           <span>Разбор на русском</span>
-          <span>Экспорт JSON</span>
+          <span>Выгрузка данных</span>
         </div>
       </div>
       <aside class="hero-panel">
@@ -30,25 +122,25 @@
         <ul>
           <li>Загрузка `.txt`, `.md`, `.csv`, `.json`, изображений и ручной ввод текста</li>
           <li>Извлечение пациента, врача, диагноза, анализов и назначений</li>
-          <li>Таймлайн кейсов в браузере</li>
-          <li>Подсветка отклонений анализов и AI-чат по кейсу</li>
+          <li>История обращений в браузере</li>
+          <li>Подсветка отклонений анализов и помощник по документу</li>
         </ul>
-        <p id="hero-ai-note" class="panel-note">Проверка подключения AI-чата...</p>
+        <p id="hero-ai-note" class="panel-note">Проверка подключения помощника...</p>
       </aside>
     </header>
 
-    <main class="grid">
+    <main class="grid admin-only">
       <section class="card intake-card">
         <div class="section-head">
           <div>
             <p class="section-kicker">1. Загрузка</p>
             <h2>Добавить документ</h2>
           </div>
-          <button id="fill-demo" class="ghost-btn">Подставить демо</button>
+          <button id="fill-demo" class="ghost-btn">Заполнить примером</button>
         </div>
 
         <label class="field">
-          <span>Название кейса</span>
+          <span>Название обращения</span>
           <input id="case-title" type="text" placeholder="Например: Выписка Иванова 12.03.2026">
         </label>
 
@@ -67,9 +159,9 @@
         </label>
 
         <div class="ocr-row">
-          <button id="preprocess-btn" class="ghost-btn" disabled>Улучшить для OCR</button>
+          <button id="preprocess-btn" class="ghost-btn" disabled>Подготовить изображение</button>
           <button id="ocr-btn" class="ghost-btn" disabled>Распознать текст с картинки</button>
-          <p id="ocr-status" class="muted">Для изображений PNG/JPG/WebP доступно OCR через GigaChat API.</p>
+          <p id="ocr-status" class="muted">Для изображений PNG/JPG/WebP доступно распознавание текста через GigaChat API.</p>
         </div>
 
         <div id="preview-panel" class="preview-panel hidden">
@@ -78,9 +170,9 @@
             <img id="source-image-preview" alt="Исходное изображение">
           </div>
           <div class="preview-card">
-            <p class="info-label">Подготовлено для OCR</p>
+            <p class="info-label">Подготовлено для распознавания</p>
             <img id="processed-image-preview" alt="Обработанное изображение">
-            <p id="preprocess-meta" class="muted">Сервер автоматически поворачивает и усиливает контраст перед OCR.</p>
+            <p id="preprocess-meta" class="muted">Сервер подготавливает изображение и усиливает контраст перед распознаванием.</p>
           </div>
           <div id="printed-preview-card" class="preview-card hidden">
             <p class="info-label">Печатный слой</p>
@@ -135,7 +227,7 @@
         </section>
 
         <label class="field">
-          <span>Текст документа или OCR-результат</span>
+          <span>Текст документа или результат распознавания</span>
           <textarea id="document-text" rows="14" placeholder="Вставьте сюда текст выписки, анализа, рецепта или описания снимка..."></textarea>
         </label>
 
@@ -153,7 +245,8 @@
           </div>
           <div class="toolbar">
             <button id="open-chat" class="ghost-btn" disabled>Открыть диалог</button>
-            <button id="download-json" class="ghost-btn" disabled>Скачать JSON</button>
+            <button id="edit-structured" class="ghost-btn" disabled>Редактировать данные</button>
+            <button id="download-json" class="ghost-btn" disabled>Скачать данные</button>
           </div>
         </div>
 
@@ -240,49 +333,155 @@
       </section>
     </main>
 
-    <section class="card timeline-card">
+    <section class="card timeline-card admin-only">
       <div class="section-head">
         <div>
-          <p class="section-kicker">3. История кейсов</p>
-          <h2>Сохранённые кейсы</h2>
+          <p class="section-kicker">3. История обращений</p>
+          <h2>Сохранённые обращения</h2>
         </div>
       </div>
       <div id="saved-cases" class="saved-cases"></div>
     </section>
 
-    <section class="card timeline-card">
+    <section class="card timeline-card admin-only">
       <div class="section-head">
         <div>
           <p class="section-kicker">4. Пациенты</p>
           <h2>Пациенты в базе</h2>
         </div>
+        <div class="toolbar">
+          <button id="seed-database" class="ghost-btn" type="button">Заполнить демо-базу</button>
+          <a class="ghost-btn" href="database.html?v=20260504-1">Перейти к базе</a>
+        </div>
       </div>
       <div id="patients-list" class="saved-cases"></div>
     </section>
+    </div>
   </div>
 
   <dialog id="chat-modal" class="chat-modal">
     <div class="chat-shell">
       <div class="section-head chat-head">
         <div>
-          <p class="section-kicker">Case Dialogue</p>
+          <p class="section-kicker">Диалог по обращению</p>
           <h2>Вопросы по документу</h2>
         </div>
         <button id="close-chat" class="ghost-btn">Закрыть</button>
       </div>
       <div id="chat-log" class="chat-log">
         <div class="chat-bubble assistant">
-          <p>Спросите, что найдено в документе: диагноз, отклонения анализов, назначения, врач, дата или краткое summary.</p>
+          <div class="chat-bubble-top">
+            <p>Спросите, что найдено в документе: диагноз, отклонения анализов, назначения, врач, дата или краткая сводка.</p>
+            <button class="tts-btn" type="button" aria-label="Озвучить ответ" title="Озвучить ответ">🔊</button>
+          </div>
         </div>
       </div>
-      <p id="chat-status" class="muted">AI-чат использует текущий документ и извлечённые поля как контекст.</p>
+      <p id="chat-status" class="muted">Помощник использует текущий документ и найденные поля как контекст.</p>
+      <p id="voice-status" class="muted">Голосовые функции готовы к проверке.</p>
       <form id="chat-form" class="chat-form">
         <input id="chat-input" type="text" placeholder="Например: Какие показатели вне нормы?">
+        <button id="mic-btn" class="ghost-btn mic-btn" type="button" aria-label="Голосовой ввод" title="Голосовой ввод">🎤</button>
         <button class="primary-btn" type="submit">Спросить</button>
       </form>
     </div>
   </dialog>
 
-  <script src="app.js"></script>
+  <dialog id="saved-case-edit-modal" class="chat-modal">
+    <div class="chat-shell">
+      <div class="section-head chat-head">
+        <div>
+          <p class="section-kicker">Редактирование обращения</p>
+          <h2 id="saved-case-edit-title">Карточка обращения</h2>
+        </div>
+        <button id="close-saved-case-edit" class="ghost-btn" type="button">Закрыть</button>
+      </div>
+      <form id="saved-case-edit-form">
+        <label class="field">
+          <span>Название обращения</span>
+          <input id="saved-case-title-input" type="text" required>
+        </label>
+        <label class="field">
+          <span>Пациент</span>
+          <input id="saved-case-patient-input" type="text">
+        </label>
+        <label class="field">
+          <span>Основной диагноз</span>
+          <input id="saved-case-diagnosis-input" type="text">
+        </label>
+        <label class="field">
+          <span>Клиническая сводка</span>
+          <textarea id="saved-case-summary-input" rows="5"></textarea>
+        </label>
+        <div class="action-row">
+          <button class="primary-btn" type="submit">Сохранить</button>
+          <button id="cancel-saved-case-edit" class="ghost-btn" type="button">Отменить</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog id="structured-edit-modal" class="chat-modal">
+    <div class="chat-shell">
+      <div class="section-head chat-head">
+        <div>
+          <p class="section-kicker">Редактирование разбора</p>
+          <h2>Структурированные данные</h2>
+        </div>
+        <button id="close-structured-edit" class="ghost-btn" type="button">Закрыть</button>
+      </div>
+      <form id="structured-edit-form">
+        <label class="field">
+          <span>Название обращения</span>
+          <input id="structured-title-input" type="text" required>
+        </label>
+        <label class="field">
+          <span>Пациент</span>
+          <input id="structured-patient-input" type="text">
+        </label>
+        <label class="field">
+          <span>Дата рождения</span>
+          <input id="structured-birth-date-input" type="text">
+        </label>
+        <label class="field">
+          <span>Тип документа</span>
+          <input id="structured-document-type-input" type="text">
+        </label>
+        <label class="field">
+          <span>Дата документа</span>
+          <input id="structured-document-date-input" type="text">
+        </label>
+        <label class="field">
+          <span>Организация</span>
+          <input id="structured-facility-input" type="text">
+        </label>
+        <label class="field">
+          <span>Врач</span>
+          <input id="structured-doctor-input" type="text">
+        </label>
+        <label class="field">
+          <span>Диагнозы</span>
+          <textarea id="structured-diagnoses-input" rows="4" placeholder="Каждый диагноз с новой строки"></textarea>
+        </label>
+        <label class="field">
+          <span>Жалобы</span>
+          <textarea id="structured-complaints-input" rows="4" placeholder="Каждая жалоба с новой строки"></textarea>
+        </label>
+        <label class="field">
+          <span>Назначения</span>
+          <textarea id="structured-medications-input" rows="4" placeholder="Каждое назначение с новой строки"></textarea>
+        </label>
+        <label class="field">
+          <span>Клиническая сводка</span>
+          <textarea id="structured-summary-input" rows="5"></textarea>
+        </label>
+        <div class="action-row">
+          <button class="primary-btn" type="submit">Сохранить</button>
+          <button id="cancel-structured-edit" class="ghost-btn" type="button">Отменить</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <script src="app.js?v=20260504-1"></script>
 </body>
 </html>
